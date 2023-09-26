@@ -1,0 +1,39 @@
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:7.3.1'
+    }
+}
+
+allprojects {
+
+    ext {
+        appName = '遗迹地牢'
+        appPackageName = 'com.relicpixel.relicpixeldungeon'
+
+        appVersionCode = 668
+        appVersionName = '0.3.3'
+
+        appJavaCompatibility = JavaVersion.VERSION_1_8
+
+        appAndroidCompileSDK = 31
+
+        appAndroidMinSDK = 14
+        appAndroidTargetSDK = 31
+
+        gdxVersion = '1.11.0'
+        gdxControllersVersion = '2.2.3-SNAPSHOT'
+        robovmVersion = '2.3.16'
+    }
+    version = appVersionName
+
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+    }
+
+}

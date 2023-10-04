@@ -307,7 +307,7 @@ public class Ring extends KindofMisc {
 		if (Dungeon.hero.buff(EnhancedRings.class) != null){
 			lvl++;
 		}
-		if(Dungeon.hero.buff(BlessingPower.Blessing.class)!=null&&inlay==Inlay.blessedPeal&&isEquipped(Dungeon.hero)){
+		if(Dungeon.hero.buff(BlessingPower.Blessing.class)!=null&&inlay==Inlay.blessedPeal){
 			lvl+=Dungeon.hero.buff(BlessingPower.Blessing.class).extraLevel();
 		}
 		return lvl;

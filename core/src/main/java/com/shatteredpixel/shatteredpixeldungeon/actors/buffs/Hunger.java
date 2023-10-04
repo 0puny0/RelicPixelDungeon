@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.items.KindOfWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.HornOfPlenty;
@@ -121,6 +122,9 @@ public class Hunger extends Buff implements Hero.Doom {
 			}
 			if(target.buff( Shadows.class )!=null){
 				stepTime*=1.5f;
+			}
+			if(target.buff(Terraforming.RelaxVigilance.class)!=null&&Dungeon.hero.pointsInTalent(Talent.TEMPORARY_REST)>1){
+				stepTime*=1.25f;
 			}
 			spend(stepTime );
 

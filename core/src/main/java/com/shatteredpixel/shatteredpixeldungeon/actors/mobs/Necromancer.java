@@ -365,6 +365,7 @@ public class Necromancer extends Mob {
 			
 			//no loot or exp
 			maxLvl = -5;
+			EXP=0;
 			
 			//20/25 health to start
 			HP = 20;

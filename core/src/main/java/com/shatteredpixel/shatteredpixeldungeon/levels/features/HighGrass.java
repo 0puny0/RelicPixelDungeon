@@ -27,9 +27,13 @@ import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Cripple;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Roots;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vulnerable;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.ArmoredStatue;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
@@ -59,15 +63,20 @@ public class HighGrass {
 		Char ch = Actor.findChar(pos);
 		
 		if (level.map[pos] == Terrain.FURROWED_GRASS){
-			if (ch instanceof Hero && ((Hero) ch).heroClass == HeroClass.HUNTRESS){
+			if (ch instanceof Hero &&( ((Hero) ch).heroClass == HeroClass.HUNTRESS|| ((Hero) ch).subClass== HeroSubClass.SURVIVOR)){
 				//Do nothing
 				freezeTrample = true;
 			} else {
+				if(Dungeon.hero.hasTalent(Talent.VINE_TRAP)&&ch.buff(Talent.VineTrapTracker.class)==null){
+					Buff.affect(ch, Talent.VineTrapTracker.class);
+					Buff.affect(ch, Vulnerable.class,Dungeon.hero.pointsInTalent(Talent.VINE_TRAP)==1?1:2);
+					Buff.affect(ch, Roots.class,Dungeon.hero.pointsInTalent(Talent.VINE_TRAP)==3?2:1);
+				}
 				Level.set(pos, Terrain.GRASS);
 			}
 			
 		} else {
-			if (ch instanceof Hero && ((Hero) ch).heroClass == HeroClass.HUNTRESS){
+			if (ch instanceof Hero &&( ((Hero) ch).heroClass == HeroClass.HUNTRESS|| ((Hero) ch).subClass== HeroSubClass.SURVIVOR)){
 				Level.set(pos, Terrain.FURROWED_GRASS);
 				freezeTrample = true;
 			} else {

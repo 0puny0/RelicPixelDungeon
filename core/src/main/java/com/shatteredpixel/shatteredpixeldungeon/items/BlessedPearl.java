@@ -3,6 +3,8 @@ package com.shatteredpixel.shatteredpixeldungeon.items;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.BlessingPower;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.EnhancedRings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
@@ -65,6 +67,16 @@ public class BlessedPearl extends Item{
             return false;
         }
 
+    }
+
+    @Override
+    public int buffedLvl() {
+        int lvl = super.buffedLvl();
+
+        if(Dungeon.hero.buff(BlessingPower.Blessing.class)!=null){
+            lvl+=Dungeon.hero.buff(BlessingPower.Blessing.class).extraLevel();
+        }
+        return lvl;
     }
 
     protected static WndBag.ItemSelector equipSelector = new WndBag.ItemSelector() {

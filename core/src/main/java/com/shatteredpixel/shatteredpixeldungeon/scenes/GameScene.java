@@ -521,7 +521,7 @@ public class GameScene extends PixelScene {
 				GLog.h(Messages.get(this, "return"), Dungeon.depth);
 			}
 
-			if (Dungeon.hero.hasTalent(Talent.ROGUES_FORESIGHT)
+			if (Dungeon.hero.hasTalent(Talent.TREASURE_FORESIGHT)
 					&& Dungeon.level instanceof RegularLevel){
 				int reqSecrets = Dungeon.level.feeling == Level.Feeling.SECRETS ? 2 : 1;
 				for (Room r : ((RegularLevel) Dungeon.level).rooms()){
@@ -531,7 +531,7 @@ public class GameScene extends PixelScene {
 				//50%/75% chance, use level's seed so that we get the same result for the same level
 				//offset seed slightly to avoid output patterns
 				Random.pushGenerator(Dungeon.seedCurDepth()+1);
-					if (reqSecrets <= 0 && (Random.Float() < 0.34f + 0.33f*Dungeon.hero.pointsInTalent(Talent.ROGUES_FORESIGHT))){
+					if (reqSecrets <= 0 ){
 						GLog.p(Messages.get(this, "secret_hint"));
 					}
 				Random.popGenerator();

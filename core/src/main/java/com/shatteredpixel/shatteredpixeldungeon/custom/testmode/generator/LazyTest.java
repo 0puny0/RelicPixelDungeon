@@ -108,6 +108,7 @@ public class LazyTest extends TestGenerator {
 
             LongSword sword = new LongSword();
             sword.level(15);
+            sword.tier=5;
             sword.identify().collect();
 
             new Gold().quantity(16000000).doPickUp(hero);

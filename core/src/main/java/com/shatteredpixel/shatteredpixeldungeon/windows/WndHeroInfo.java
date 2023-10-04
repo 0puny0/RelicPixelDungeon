@@ -183,7 +183,7 @@ public class WndHeroInfo extends WndTabbed {
 					break;
 				case ROGUE:
 					icons = new Image[]{ new ItemSprite(ItemSpriteSheet.ARTIFACT_CLOAK),
-							Icons.get(Icons.STAIRS),
+							Icons.get(Icons.WALL),
 							new ItemSprite(ItemSpriteSheet.DAGGER),
 							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)};
 					break;
@@ -195,7 +195,7 @@ public class WndHeroInfo extends WndTabbed {
 					break;
 				case ADVENTURER:
 					icons=new Image[]{ new ItemSprite(ItemSpriteSheet.BLESSED_PEARL),
-							Icons.get(Icons.WALL),
+							Icons.get(Icons.STAIRS),
 							new ItemSprite(ItemSpriteSheet.SWORDSHIELD),
 							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)};
 			}

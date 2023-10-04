@@ -57,6 +57,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Recharging;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.RevealedArea;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Roots;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Terraforming;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.WandEmpower;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.ArmorAbility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.Ratmogrify;
@@ -141,7 +142,7 @@ public enum Talent {
 	//Rogue T1
 	CACHED_RATIONS(64), THIEFS_INTUITION(65), SUCKER_PUNCH(66), PROTECTIVE_SHADOWS(67),
 	//Rogue T2
-	MYSTICAL_MEAL(68),ASSASSINATE_ARROW(69), CHARGING_EXPANSION(70), KEEN_SENSES(71), ROGUES_FORESIGHT(72),
+	MYSTICAL_MEAL(68),ASSASSINATE_ARROW(69), CHARGING_EXPANSION(70),SILENT_STEPS(71), KEEN_SENSES(72),
 	//Rogue T3
 	ENHANCED_RINGS(73, 3), LIGHT_CLOAK(74, 3),
 	//Assassin T3
@@ -179,11 +180,12 @@ public enum Talent {
 	//ADVENTURER T1
 	ANATOMY_EXPERT(128),MALICE_PERCEPTION(129),CRISIS_SURVIVAL(130),STRESS_ALERT(131),
 	//ADVENTURER T2
-	FAST_EAT(132),SURPRISE(133),UPGRADE_TRANSFER(134),CREPT(135),NECESSITY(136),
+	FAST_EAT(132),SURPRISE(133),UPGRADE_TRANSFER(134), TREASURE_FORESIGHT(135),NECESSITY(136),
 	//ADVENTURER T3
 	THE_HAYWIRE(137,3),FEINTED(138,3),
 	//SAVIOR T3
-	TWIN_SACRED_OBJECTS(139,3),ANCESTOR_BLESSING(140,3),BESTOW_RESONANCE(141,3)
+	TWIN_SACRED_OBJECTS(139,3),ANCESTOR_BLESSING(140,3),BESTOW_RESONANCE(141,3),
+	VINE_TRAP(142,3),GOOD_SWIMMER(143,3),TEMPORARY_REST(144,3)
 			;
 
 	public static class ImprovisedProjectileCooldown extends FlavourBuff{
@@ -414,6 +416,14 @@ public enum Talent {
 		if (talent==TWIN_SACRED_OBJECTS&&hero.buff(BlessingPower.class)!=null){
 			hero.buff(BlessingPower.class).twinSacredObjects();
 		}
+		if(talent==TEMPORARY_REST&&hero.pointsInTalent(TEMPORARY_REST) == 1){
+			Terraforming t=hero.buff(Terraforming.class);
+			if(t!=null){
+				for (int i=0;i<t.doorOpps.length;i++){
+					t.doorOpps[i]+=2;
+				}
+			}
+		}
 	}
 
 	public static class CachedRationsDropped extends CounterBuff{{revivePersists = true;}};
@@ -623,6 +633,7 @@ public enum Talent {
 	};
 	public static class SuckerPunchTracker extends Buff{};
 	public static class SurpriseTracker extends Buff{};
+	public static class VineTrapTracker extends Buff{};
 	public static class FollowupStrikeTracker extends Buff{
 		{  announced=true;type=buffType.NEGATIVE;}
 		public int icon() { return BuffIndicator.INVERT_MARK; }
@@ -681,13 +692,13 @@ public enum Talent {
 				Collections.addAll(tierTalents, ENERGIZING_MEAL, COAGULATION_SHIELD, WAND_PRESERVATION, ARCANE_VISION, SHIELD_BATTERY);
 				break;
 			case ROGUE:
-				Collections.addAll(tierTalents, MYSTICAL_MEAL, ASSASSINATE_ARROW,  CHARGING_EXPANSION,KEEN_SENSES , ROGUES_FORESIGHT);
+				Collections.addAll(tierTalents, MYSTICAL_MEAL, ASSASSINATE_ARROW,  CHARGING_EXPANSION,SILENT_STEPS, KEEN_SENSES);
 				break;
 			case HUNTRESS:
 				Collections.addAll(tierTalents, INVIGORATING_MEAL, REJUVENATING_STEPS,CONCENTRATE_SHOOT, HEIGHTENED_SENSES, DURABLE_PROJECTILES);
 				break;
 			case ADVENTURER:
-				Collections.addAll(tierTalents, FAST_EAT,SURPRISE,UPGRADE_TRANSFER,CREPT,NECESSITY);
+				Collections.addAll(tierTalents, FAST_EAT,SURPRISE,UPGRADE_TRANSFER,TREASURE_FORESIGHT,NECESSITY);
 				break;
 		}
 		for (Talent talent : tierTalents){
@@ -769,6 +780,9 @@ public enum Talent {
 				break;
 			case SAVIOR:
 				Collections.addAll(tierTalents,TWIN_SACRED_OBJECTS,ANCESTOR_BLESSING,BESTOW_RESONANCE);
+				break;
+			case SURVIVOR:
+				Collections.addAll(tierTalents,VINE_TRAP,GOOD_SWIMMER,TEMPORARY_REST);
 				break;
 		}
 		for (Talent talent : tierTalents){

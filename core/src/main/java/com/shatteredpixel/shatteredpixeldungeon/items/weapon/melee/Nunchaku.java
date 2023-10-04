@@ -8,7 +8,7 @@ public class Nunchaku extends MeleeWeapon{
         hitSoundPitch=1.3f;
         DMG=0.25f;
         DLY=0.5f;
-        ACC=0.5f;
+        ACC=0.75f;
     }
 
 }

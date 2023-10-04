@@ -58,6 +58,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Momentum;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Regeneration;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.SnipersMark;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Terraforming;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vertigo;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.WarFever;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.ArmorAbility;
@@ -82,6 +83,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClassArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.AntiMagic;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Brimstone;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Flow;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Viscosity;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.AlchemistsToolkit;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CapeOfThorns;
@@ -105,6 +107,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfExperience
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfMight;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfDivineInspiration;
+import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfArcana;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfCommand;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfEvasion;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfForce;
@@ -122,6 +125,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.HolyShield;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.KnifeFork;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.KnightLance;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.LongSword;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagicShield;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Nunchaku;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.PricklyShield;
@@ -508,7 +512,9 @@ public class Hero extends Char {
 			}
 			target.buff(Talent.FeintedTracker.class).detach();
 		}
-
+		if(Dungeon.level.water[pos]&&pointsInTalent(Talent.GOOD_SWIMMER)>1){
+			accuracy*=1.15f;
+		}
 		if (wep != null) {
 			return (int)(attackSkill * accuracy * wep.accuracyFactor( this, target ));
 		} else {
@@ -525,7 +531,12 @@ public class Hero extends Char {
 			Buff.affect(this, SwordShield.RiposteTracker.class).enemy = enemy;
 			return UNABLE_EVASION;
 		}
-		
+		if(subClass==HeroSubClass.SURVIVOR&&Dungeon.level.water[pos]&&!Dungeon.level.adjacent(enemy.pos,pos)){
+			return INFINITE_EVASION;
+		}
+		if (buff(Terraforming.ProduceWaterTracker.class)!=null){
+			return INFINITE_EVASION;
+		}
 		float evasion = defenseSkill;
 		
 		evasion *= RingOfEvasion.evasionMultiplier( this );
@@ -534,7 +545,9 @@ public class Hero extends Char {
 		if (paralysed > 0) {
 			evasion /= 2;
 		}
-
+		if(Dungeon.level.water[pos]&&hasTalent(Talent.GOOD_SWIMMER)){
+			evasion*=1.15f;
+		}
 		if (belongings.armor() != null) {
 			evasion = belongings.armor().evasionFactor(this, evasion);
 		}
@@ -599,7 +612,7 @@ public class Hero extends Char {
 
 		float speed = super.speed();
 		if(belongings.weapon() instanceof GreatAxe){
-			speed*=0.5f;
+			speed*=0.75f;
 		}
 		speed *= RingOfHaste.speedMultiplier(this);
 		
@@ -613,6 +626,9 @@ public class Hero extends Char {
 			speed *= momentum.speedMultiplier();
 		} else {
 			((HeroSprite)sprite).sprint( 1f );
+		}
+		if ((Dungeon.level.map[pos] == Terrain.FURROWED_GRASS||Dungeon.level.map[pos] == Terrain.HIGH_GRASS)&&subClass==HeroSubClass.SURVIVOR){
+			speed *= 1.5f;
 		}
 		if(pointsInTalent(Talent.WAR_FEVER)>=2&&buff(WarFever.class)!=null){
 			speed*=2;
@@ -817,7 +833,7 @@ public class Hero extends Char {
 
 	public boolean isStandingOnTrampleableGrass(){
 		return !rooted && !flying &&
-				(Dungeon.level.map[pos] == Terrain.HIGH_GRASS || (heroClass != HeroClass.HUNTRESS && Dungeon.level.map[pos] == Terrain.FURROWED_GRASS));
+				(Dungeon.level.map[pos] == Terrain.HIGH_GRASS || (heroClass != HeroClass.HUNTRESS&&subClass!=HeroSubClass.SURVIVOR && Dungeon.level.map[pos] == Terrain.FURROWED_GRASS));
 	}
 	
 	private boolean actMove( HeroAction.Move action ) {
@@ -1322,12 +1338,16 @@ public class Hero extends Char {
 			dmg = thorns.proc(dmg, (src instanceof Char ? (Char)src : null),  this);
 		}
 
-		dmg = (int)Math.ceil(dmg * RingOfCommand.damageResistanceBonus( this ));
-
 		//TODO improve this when I have proper damage source logic
 		if (belongings.armor() != null && belongings.armor().hasGlyph(AntiMagic.class, this)
 				&& AntiMagic.RESISTS.contains(src.getClass())){
 			dmg -= AntiMagic.drRoll(this, belongings.armor().buffedLvl());
+		}
+
+
+		dmg = (int)Math.ceil(dmg * RingOfCommand.damageResistanceBonus( this ));
+		if(Dungeon.level.water[pos]&&pointsInTalent(Talent.GOOD_SWIMMER)>2){
+			dmg*=0.85;
 		}
 
 		if (buff(Talent.WarriorFoodImmunity.class) != null){
@@ -1629,8 +1649,6 @@ public class Hero extends Char {
 		
 		Berserk berserk = buff(Berserk.class);
 		if (berserk != null) berserk.recover(percent);
-		BlessingPower blessing=buff(BlessingPower.class);
-		if(blessing!=null) blessing.setAdding(percent);
 		
 		if (source != PotionOfExperience.class) {
 			for (Item i : belongings) {
@@ -1913,7 +1931,7 @@ public class Hero extends Char {
 		boolean wasHighGrass = Dungeon.level.map[step] == Terrain.HIGH_GRASS;
 
 		super.move( step, travelling);
-		
+
 		if (!flying && travelling) {
 			if (Dungeon.level.water[pos]) {
 				Sample.INSTANCE.play( Assets.Sounds.WATER, 1, Random.Float( 0.8f, 1.25f ) );
@@ -1976,6 +1994,9 @@ public class Hero extends Char {
 				if (door == Terrain.LOCKED_DOOR) {
 					hasKey = Notes.remove(new IronKey(Dungeon.depth));
 					if (hasKey) Level.set(doorCell, Terrain.DOOR);
+					if(subClass==HeroSubClass.SURVIVOR){
+						Terraforming.isClosed();
+					}
 				} else if (door == Terrain.CRYSTAL_DOOR) {
 					hasKey = Notes.remove(new CrystalKey(Dungeon.depth));
 					if (hasKey) {
@@ -2042,7 +2063,7 @@ public class Hero extends Char {
 		if (!isAlive()) return false;
 		
 		boolean smthFound = false;
-		int distance = heroClass == HeroClass.ROGUE ? 2 : 1;
+		int distance = heroClass == HeroClass.ADVENTURER ? 2 : 1;
 
 		
 		boolean foresight = buff(Foresight.class) != null;
@@ -2105,14 +2126,14 @@ public class Hero extends Char {
 						} else if (Dungeon.level.map[curr] == Terrain.SECRET_TRAP) {
 							chance = 0.4f - (Dungeon.depth / 250f);
 							if(hasTalent(Talent.KEEN_SENSES)){
-								chance+=-0.15f+0.4f*pointsInTalent(Talent.KEEN_SENSES);
+								chance+=0.2f+0.25f*pointsInTalent(Talent.KEEN_SENSES);
 							}
 							
 						//unintentional door detection scales from 20% at floor 0 to 0% at floor 20
 						} else {
 							chance = 0.2f - (Dungeon.depth / 100f);
-							if(hasTalent(Talent.KEEN_SENSES)&&pointsInTalent(Talent.KEEN_SENSES)>=1){
-								chance+=0.1f;
+							if(pointsInTalent(Talent.TREASURE_FORESIGHT)==2){
+								chance+=0.15f;
 							}
 						}
 

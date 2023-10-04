@@ -240,13 +240,13 @@ public class MeleeWeapon extends Weapon {
 
 	@Override
 	public int level() {
-		if(Dungeon.hero.hasTalent(Talent.TWIN_SACRED_OBJECTS)
+		int lvl=0;
+		if(Dungeon.hero.pointsInTalent(Talent.TWIN_SACRED_OBJECTS)>1
 				&&BlessingPower.holyWeapon!=null
 				&&inlay==Inlay.blessedPeal&&pearl!=null){
-			return BlessingPower.holyWeapon.level()+pearl.level();
-		}else {
-			return super.level();
+			lvl=BlessingPower.holyWeapon.level()+pearl.level();
 		}
+			return super.level()>lvl?super.level():lvl;
 	}
 
 	@Override
@@ -255,7 +255,7 @@ public class MeleeWeapon extends Weapon {
 		if (Dungeon.hero.buff(WarFever.class) != null&&this ==Dungeon.hero.belongings.weapon()){
 			lvl+=Dungeon.hero.buff(WarFever.class).level;
 		}
-		if(Dungeon.hero.buff(BlessingPower.Blessing.class)!=null&&inlay==Inlay.blessedPeal&&isEquipped(Dungeon.hero)){
+		if(Dungeon.hero.buff(BlessingPower.Blessing.class)!=null&&inlay==Inlay.blessedPeal){
 			lvl+=Dungeon.hero.buff(BlessingPower.Blessing.class).extraLevel();
 		}
 		return lvl;

@@ -272,8 +272,8 @@ public abstract class Mob extends Char {
 		//we have no enemy, or the current one is dead/missing
 		if ( enemy == null || !enemy.isAlive() || !Actor.chars().contains(enemy) || state == WANDERING) {
 			newEnemy = true;
-		//We are amoked and current enemy is the hero
-		} else if (buff( Amok.class ) != null && enemy == Dungeon.hero) {
+		//狂怒始终攻击最靠近自己的目标
+		} else if (buff( Amok.class ) != null) {
 			newEnemy = true;
 		//We are charmed and current enemy is what charmed us
 		} else if (buff(Charm.class) != null && buff(Charm.class).object == enemy.id()) {
@@ -352,6 +352,9 @@ public abstract class Mob extends Char {
 			Charm charm = buff( Charm.class );
 			if (charm != null){
 				Char source = (Char)Actor.findById( charm.object );
+//				if(Dungeon.level.distance(pos,source.pos)>1){
+//					enemy=source
+//				}
 				if (source != null && enemies.contains(source) && enemies.size() > 1){
 					enemies.remove(source);
 				}
@@ -954,14 +957,14 @@ public abstract class Mob extends Char {
 
 				float enemyStealth = enemy.stealth();
 
-				if (enemy instanceof Hero &&Dungeon.hero.heroClass == HeroClass.ADVENTURER){
+				if (enemy instanceof Hero &&Dungeon.hero.heroClass == HeroClass.ROGUE){
 					for (int i = 0; i < PathFinder.NEIGHBOURS4.length; i++) {
 						int p = enemy.pos + PathFinder.NEIGHBOURS4[i];
 						if ( Dungeon.level.solid[p]) {
 							if(Dungeon.level.distance(pos, enemy.pos) >=2){
 								enemyStealth = Float.POSITIVE_INFINITY;
 							}else {
-								enemyStealth+=Dungeon.hero.pointsInTalent(Talent.CREPT)*0.5f;
+								enemyStealth+=Dungeon.hero.pointsInTalent(Talent.SILENT_STEPS)*0.5f;
 							}
 							break;
 						}

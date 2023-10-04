@@ -62,7 +62,10 @@ public class Regeneration extends Buff {
 				}
 			}
 			if(((Hero)target).toWellfed()){
-				delay*=0.7f;
+				delay*=0.75f;
+			}
+			if(target.buff(Terraforming.RelaxVigilance.class)!=null){
+				delay*=0.8f;
 			}
 			spend( delay );
 			

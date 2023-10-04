@@ -34,6 +34,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.huntress.NaturesPower;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Splash;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.LeafParticle;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TimekeepersHourglass;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfSharpshooting;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
@@ -41,6 +42,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWea
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Door;
+import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Blindweed;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Firebloom;
@@ -48,6 +50,7 @@ import com.shatteredpixel.shatteredpixeldungeon.plants.Icecap;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Sorrowmoss;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Stormvine;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Swiftthistle;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -402,6 +405,31 @@ public class SpiritBow extends MeleeWeapon {
 					Level.set(cell, Terrain.OPEN_DOOR);
 					GameScene.updateMap(cell);
 				}
+				if ( Dungeon.level.map[cell] == Terrain.TRAP){
+					Trap trap = Dungeon.level.traps.get( cell );
+					TimekeepersHourglass.timeFreeze timeFreeze =
+							Dungeon.hero.buff(TimekeepersHourglass.timeFreeze.class);
+
+					Swiftthistle.TimeBubble bubble =
+							Dungeon.hero.buff(Swiftthistle.TimeBubble.class);
+
+					if (trap != null) {
+						if (bubble != null){
+							Sample.INSTANCE.play(Assets.Sounds.TRAP);
+							Dungeon.level.discover(cell);
+							bubble.setDelayedPress(cell);
+
+						} else if (timeFreeze != null){
+							Sample.INSTANCE.play(Assets.Sounds.TRAP);
+							Dungeon.level.discover(cell);
+							timeFreeze.setDelayedPress(cell);
+
+						} else {
+							trap.trigger();
+						}
+					}
+				}
+
 				parent = null;
 				Splash.at( cell, 0xCC99FFFF, 1 );
 			} else {

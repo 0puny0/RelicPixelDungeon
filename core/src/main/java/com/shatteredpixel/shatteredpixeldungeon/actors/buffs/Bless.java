@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ActionIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 
 public class Bless extends FlavourBuff {
@@ -38,7 +39,8 @@ public class Bless extends FlavourBuff {
 	public boolean attachTo(Char target) {
 		BlessingPower power=target.buff(BlessingPower.class);
 		if(power!=null&&power.abilityCanUse()){
-			power.setAdding(2.5f);
+			power.charge+=7;
+			ActionIndicator.refresh();
 			return false;
 		}
 		return super.attachTo(target);

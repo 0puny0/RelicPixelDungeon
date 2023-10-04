@@ -1,0 +1,20 @@
+{
+  "version": 3,
+  "artifactType": {
+    "type": "APK",
+    "kind": "Directory"
+  },
+  "applicationId": "com.relicpixel.relicpixeldungeon.indev",
+  "variantName": "debug",
+  "elements": [
+    {
+      "type": "SINGLE",
+      "filters": [],
+      "attributes": [],
+      "versionCode": 668,
+      "versionName": "0.3.4-INDEV",
+      "outputFile": "android-debug.apk"
+    }
+  ],
+  "elementType": "File"
+}

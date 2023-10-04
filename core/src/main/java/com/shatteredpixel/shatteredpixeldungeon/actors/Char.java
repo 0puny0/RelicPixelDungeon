@@ -388,7 +388,7 @@ public abstract class Char extends Actor {
 			if (berserk != null) dmg = berserk.damageFactor(dmg);
 			BlessingPower blessingPower=buff(BlessingPower.class);
 			if(blessingPower!=null&&blessingPower.abilityCanUse()&&enemy.properties().contains(Property.DEMONIC)){
-				dmg=blessingPower.damageFactor(dmg);
+				dmg*=1.3f;
 				enemy.sprite.emitter().start(ShadowParticle.UP, 0.05f, 8 );
 			}
 

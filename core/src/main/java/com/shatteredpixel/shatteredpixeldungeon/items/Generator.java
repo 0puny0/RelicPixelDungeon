@@ -383,11 +383,11 @@ public class Generator {
 					MagicShield.class,
 					Nunchaku.class,
 					PiercingBlade.class,
-					DemonSword.class,
+//					DemonSword.class,
 					PricklyShield.class,
 					GreatAxe.class,
 			};
-			WEP_R2.probs = new float[]{4,4,4,4,4,4,3,4};
+			WEP_R2.probs = new float[]{4,4,4,4,4,3,4};
 
 			//see Generator.randomArmor
 			ARMOR.classes = new Class<?>[]{

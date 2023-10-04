@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
+import com.watabou.noosa.Image;
 
 public class Drowsy extends Buff {
 
@@ -38,6 +39,9 @@ public class Drowsy extends Buff {
 	public int icon() {
 		return BuffIndicator.DROWSY;
 	}
+
+	@Override
+	public void tintIcon(Image icon) { icon.hardlight(0.75f, 0.3f, 0.75f); }
 
 	@Override
 	public float iconFadePercent() {

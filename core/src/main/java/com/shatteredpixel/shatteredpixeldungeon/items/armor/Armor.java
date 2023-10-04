@@ -377,7 +377,7 @@ public class Armor extends EquipableItem {
 	@Override
 	public int buffedLvl() {
 		int lvl =super.buffedLvl();
-		if(Dungeon.hero.buff(BlessingPower.Blessing.class)!=null&&inlay==Inlay.blessedPeal&&isEquipped(Dungeon.hero)){
+		if(Dungeon.hero.buff(BlessingPower.Blessing.class)!=null&&inlay==Inlay.blessedPeal){
 			lvl+=Dungeon.hero.buff(BlessingPower.Blessing.class).extraLevel();
 		}
 		return  lvl;

@@ -168,7 +168,7 @@ public enum HeroClass {
 	MAGE( HeroSubClass.BATTLEMAGE, HeroSubClass.WARLOCK ),
 	ROGUE( HeroSubClass.ASSASSIN, HeroSubClass.FREERUNNER ),
 	HUNTRESS( HeroSubClass.SNIPER, HeroSubClass.WARDEN ),
-	ADVENTURER(HeroSubClass.SAVIOR);
+	ADVENTURER(HeroSubClass.SAVIOR,HeroSubClass.SURVIVOR);
 
 	private HeroSubClass[] subClasses;
 
@@ -280,7 +280,7 @@ public enum HeroClass {
 		Dungeon.quickslot.setSlot(0, staff);
 
 
-		new ScrollOfUpgrade().identify();
+		new ScrollOfRecharging().identify();
 		new PotionOfLiquidFlame().identify();
 	}
 

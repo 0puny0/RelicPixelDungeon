@@ -1,5 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 
+import static com.shatteredpixel.shatteredpixeldungeon.items.Item.updateQuickslot;
+
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
@@ -7,6 +9,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.SpellSprite;
+import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfEnergy;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
@@ -27,8 +30,9 @@ import java.awt.dnd.DnDConstants;
 
 public class BlessingPower extends Buff implements ActionIndicator.Action {
 
-    int charge;
-    float adding;
+    public int charge;
+    int chargeCap=10;
+    float partialCharge = 0;
     public static MeleeWeapon holyWeapon=null;
     public static MeleeWeapon blessWeapon=null;
     static boolean  blessingEquip=false,blessedEquip=false;
@@ -44,13 +48,12 @@ public class BlessingPower extends Buff implements ActionIndicator.Action {
             return BuffIndicator.NONE;
         }
     }
-
     @Override
     public String desc() {
-        return Messages.get(this,"desc", charge *(Dungeon.hero.pointsInTalent(Talent.ANCESTOR_BLESSING)==2?4:3), charge);
+        return Messages.get(this,"desc", charge);
     }
     private static final String CHARGE = "charge";
-    private static final String ADDING  = "adding";
+    private static final String PARTIALCHARGE  = "partialcharge";
 //    private static final String HOLYWEAPON = "holyweapon";
 //    private static final String BLESSWEAPON = "blessweapon";
     private static final String BLESSINGEQUIP = "blessingequip";
@@ -63,7 +66,7 @@ public class BlessingPower extends Buff implements ActionIndicator.Action {
     public void storeInBundle(Bundle bundle) {
         super.storeInBundle(bundle);
         bundle.put(CHARGE, charge);
-        bundle.put(ADDING, adding);
+        bundle.put(PARTIALCHARGE, partialCharge);
         bundle.put(BLESSINGEQUIP, blessingEquip);
         bundle.put(BLESSEDEQUIP, blessedEquip);
     }
@@ -72,9 +75,37 @@ public class BlessingPower extends Buff implements ActionIndicator.Action {
     public void restoreFromBundle(Bundle bundle) {
         super.restoreFromBundle(bundle);
         charge=bundle.getInt(CHARGE);
-        adding=bundle.getFloat(ADDING);
+        partialCharge=bundle.getFloat(PARTIALCHARGE);
         blessingEquip=bundle.getBoolean(BLESSINGEQUIP);
         blessedEquip=bundle.getBoolean(BLESSEDEQUIP);
+    }
+    @Override
+    public boolean act() {
+        if (charge <chargeCap&&abilityCanUse()){
+            LockedFloor lock = target.buff(LockedFloor.class);
+            if (target.buff(Blessing.class)==null && (lock == null || lock.regenOn())) {
+                float missing = (chargeCap - charge);
+                float turnsToCharge = (35 - missing);
+                float chargeToGain = ((1f-Dungeon.hero.pointsInTalent(Talent.ANCESTOR_BLESSING)*0.1f) / turnsToCharge);
+                partialCharge += chargeToGain;
+            }
+            if (partialCharge >= 1) {
+                charge++;
+                ActionIndicator.refresh();
+                partialCharge -= 1;
+                if (charge == chargeCap){
+                    partialCharge = 0;
+                }
+
+            }
+        } else {
+            partialCharge = 0;
+        }
+        updateQuickslot();
+
+        spend( TICK );
+
+        return true;
     }
     public static void setHolyWeapon(MeleeWeapon weapon){
         holyWeapon=weapon;
@@ -96,37 +127,19 @@ public class BlessingPower extends Buff implements ActionIndicator.Action {
         return Dungeon.hero.hasTalent(Talent.TWIN_SACRED_OBJECTS)&&holyWeapon!=null&&blessWeapon!=null;
     }
     public boolean abilityCanUse(){
-        if(blessingEquip || (Dungeon.hero.pointsInTalent(Talent.TWIN_SACRED_OBJECTS)>1&&blessedEquip)){
+
+        if(blessingEquip || (Dungeon.hero.hasTalent(Talent.TWIN_SACRED_OBJECTS)&&blessedEquip)){
             return true;
         }else {
             return false;
         }
     }
-    public void setAdding(float percent){
-        if(!abilityCanUse()){
-            return;
-        }
-        if(Dungeon.hero.pointsInTalent(Talent.BESTOW_RESONANCE)>=2&&blessingEquip&&blessedEquip){
-            percent*=1.5f;
-        }
-        for (adding+=percent;adding>=0.3f;adding=adding-0.3f){
-            if(charge <10+(Dungeon.hero.pointsInTalent(Talent.ANCESTOR_BLESSING)==3?3:0)){
-                charge++;
-                if (abilityCanUse()&&charge>0){
-                    ActionIndicator.setAction( this );
-                }
-            }
-        }
-    }
+
     public static  void setBlessingEquip(boolean equip){
         blessingEquip=equip;
     }
     public static void setBlessedEquip(boolean equip){
         blessedEquip=equip;
-    }
-    public  float damageFactor(float dmg){
-        float factor=Dungeon.hero.pointsInTalent(Talent.ANCESTOR_BLESSING)>=2?0.03f:0.02f;
-        return dmg *(1f+factor*charge);
     }
     public boolean isOpen(){
         return Dungeon.hero.buff(Blessing.class)!=null;
@@ -144,7 +157,7 @@ public class BlessingPower extends Buff implements ActionIndicator.Action {
     @Override
     public Visual primaryVisual() {
 
-        if (twinTakeEffect()&& Dungeon.hero.pointsInTalent(Talent.TWIN_SACRED_OBJECTS)>1){
+        if (twinTakeEffect()&& Dungeon.hero.hasTalent(Talent.TWIN_SACRED_OBJECTS)){
             if (blessWeapon.isEquipped(Dungeon.hero)||holyWeapon.isEquipped(Dungeon.hero)){
                 Image ico;
                 ico = new  ItemSprite(Dungeon.hero.belongings.weapon);
@@ -165,7 +178,7 @@ public class BlessingPower extends Buff implements ActionIndicator.Action {
 
     @Override
     public int indicatorColor() {
-        if (twinTakeEffect()&& Dungeon.hero.pointsInTalent(Talent.TWIN_SACRED_OBJECTS)>1){
+        if (twinTakeEffect()&& Dungeon.hero.hasTalent(Talent.TWIN_SACRED_OBJECTS)){
             if (holyWeapon.isEquipped(Dungeon.hero)){
                 return 0xffff00;
             }
@@ -189,7 +202,6 @@ public class BlessingPower extends Buff implements ActionIndicator.Action {
             charge--;
             Blessing blessing=new Blessing();
             blessing.attachTo(Dungeon.hero);
-            Dungeon.refreshView();
         }
         Sample.INSTANCE.play(Assets.Sounds.MISS, 1f, 0.8f);
         target.sprite.emitter().burst(Speck.factory(Speck.JET), 5);
@@ -235,13 +247,13 @@ public class BlessingPower extends Buff implements ActionIndicator.Action {
             return Integer.toString(turnsToCost);
         }
         public int blessTime(){
-            return Dungeon.hero.hasTalent(Talent.ANCESTOR_BLESSING)?8:6;
+            return 6;
         }
         public int extraLevel(){
             if(holyWeapon.buffedLvl()<4){
-                return 1+(Dungeon.hero.pointsInTalent(Talent.BESTOW_RESONANCE)+1)/2;
+                return 1+Dungeon.hero.pointsInTalent(Talent.BESTOW_RESONANCE);
             }else {
-                return holyWeapon.buffedLvl()/4+(Dungeon.hero.pointsInTalent(Talent.BESTOW_RESONANCE)+1)/2 ;
+                return holyWeapon.buffedLvl()/4+Dungeon.hero.pointsInTalent(Talent.BESTOW_RESONANCE) ;
             }
         }
         @Override
@@ -297,14 +309,12 @@ public class BlessingPower extends Buff implements ActionIndicator.Action {
         @Override
         public void storeInBundle(Bundle bundle) {
             super.storeInBundle(bundle);
-
             bundle.put( TURNSTOCOST , turnsToCost);
         }
 
         @Override
         public void restoreFromBundle(Bundle bundle) {
             super.restoreFromBundle(bundle);
-
             turnsToCost = bundle.getInt( TURNSTOCOST );
         }
     }

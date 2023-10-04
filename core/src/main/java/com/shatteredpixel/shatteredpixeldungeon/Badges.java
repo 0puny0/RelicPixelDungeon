@@ -163,6 +163,7 @@ public class Badges {
 		BOSS_SLAIN_3_SNIPER,
 		BOSS_SLAIN_3_WARDEN,
 		BOSS_SLAIN_3_SAVIOR,
+		BOSS_SLAIN_3_SURVIVOR,
 		BOSS_SLAIN_3_ALL_SUBCLASSES ( 105, true ),
 		BOSS_CHALLENGE_3            ( 106 ),
 		BOSS_CHALLENGE_4            ( 107 ),
@@ -726,6 +727,7 @@ public class Badges {
 		thirdBossSubclassBadges.put(HeroSubClass.SNIPER, Badge.BOSS_SLAIN_3_SNIPER);
 		thirdBossSubclassBadges.put(HeroSubClass.WARDEN, Badge.BOSS_SLAIN_3_WARDEN);
 		thirdBossSubclassBadges.put(HeroSubClass.SAVIOR, Badge.BOSS_SLAIN_3_SAVIOR);
+		thirdBossSubclassBadges.put(HeroSubClass.SURVIVOR, Badge.BOSS_SLAIN_3_SURVIVOR);
 	}
 	
 	public static void validateBossSlain() {

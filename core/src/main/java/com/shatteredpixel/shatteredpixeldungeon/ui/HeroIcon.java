@@ -70,7 +70,9 @@ public class HeroIcon extends Image {
 	public static final int SNIPERS_MARK    = 33;
 	//ADVENTURER
 	public static final int SAVIOR=36;
+	public static final int SURVIVOR=37;
 	public static final int BLESSING=42;
+	public static final int TERRAFORMING=43;
 
 	//abilities
 

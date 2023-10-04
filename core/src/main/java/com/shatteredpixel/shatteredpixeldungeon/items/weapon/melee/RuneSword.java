@@ -173,7 +173,7 @@ public class RuneSword extends MeleeWeapon{
                 wandProc(ch, chargesPerCast());
                 int dis= Dungeon.level.distance(bolt.collisionPos,bolt.sourcePos)-1;
                 if(dis<0)dis=0;
-                int dmg=Math.round(damageRoll()*(1f-dis*0.15f));
+                int dmg=Math.round(damageRoll()*(1f-dis*0.14f));
                 if(dmg<0)dmg=0;
                 ch.damage(dmg, this);
                 Sample.INSTANCE.play( Assets.Sounds.HIT_MAGIC, 1-dis*0.2f, Random.Float(0.87f, 1.15f) );

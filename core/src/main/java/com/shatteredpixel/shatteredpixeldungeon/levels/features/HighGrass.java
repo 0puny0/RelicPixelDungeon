@@ -66,12 +66,14 @@ public class HighGrass {
 			if (ch instanceof Hero &&( ((Hero) ch).heroClass == HeroClass.HUNTRESS|| ((Hero) ch).subClass== HeroSubClass.SURVIVOR)){
 				//Do nothing
 				freezeTrample = true;
-			} else {
+			} else if(ch!=null&&ch.alignment== Char.Alignment.ENEMY){
 				if(Dungeon.hero.hasTalent(Talent.VINE_TRAP)&&ch.buff(Talent.VineTrapTracker.class)==null){
 					Buff.affect(ch, Talent.VineTrapTracker.class);
 					Buff.affect(ch, Vulnerable.class,Dungeon.hero.pointsInTalent(Talent.VINE_TRAP)==1?1:2);
 					Buff.affect(ch, Roots.class,Dungeon.hero.pointsInTalent(Talent.VINE_TRAP)==3?2:1);
 				}
+				Level.set(pos, Terrain.GRASS);
+			}else {
 				Level.set(pos, Terrain.GRASS);
 			}
 			
